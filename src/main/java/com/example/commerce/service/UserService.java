@@ -20,6 +20,11 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
 
+        // 비밀번호 유효성
+        if (userSignUpRequest.getPassword() == null || userSignUpRequest.getPassword().length() < 8) {
+            throw new IllegalArgumentException("비밀번호는 영문+ 숫자 8자리 이상이어야 합니다.");
+        }
+
         User user = new User();
         user.setEmail(userSignUpRequest.getEmail());
         user.setUsername(userSignUpRequest.getUsername());
