@@ -1,5 +1,6 @@
 package com.example.commerce.service;
 
+import com.example.commerce.dto.UserSignInRequest;
 import com.example.commerce.dto.UserSignUpRequest;
 import com.example.commerce.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -52,6 +53,28 @@ class UserServiceTest {
 
 
         assertThrows(IllegalArgumentException.class, () -> userService.signUp(request2));
+    }
+
+    @Test
+    @DisplayName("로그인 성공 : 유효한 요청시 jwt 토큰 반환")
+    void signIn_success_returnToken() {
+
+        //given
+        UserSignUpRequest signUpRequest = new UserSignUpRequest();
+        signUpRequest.setEmail("logintest@test.com");
+        signUpRequest.setPassword("logintest1");
+        signUpRequest.setUsername("logintestuser");
+        userService.signUp(signUpRequest);
+
+        //when
+        UserSignInRequest signInRequest = new UserSignInRequest();
+        signInRequest.setEmail("logintest@test.com");
+        signInRequest.setPassword("logintest1");
+        String toekn = userService.signIn(signInRequest);
+
+        //then
+        assertNotNull(toekn);
+        assertFalse(toekn.isEmpty());
     }
 
 

@@ -16,7 +16,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         // 회원가입 경로는 인증 없이 허
-                        .requestMatchers("/users/signup").permitAll()
+                        .requestMatchers("/users/signup", "/users/signin").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

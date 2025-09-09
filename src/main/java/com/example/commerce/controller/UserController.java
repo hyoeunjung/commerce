@@ -1,5 +1,6 @@
 package com.example.commerce.controller;
 
+import com.example.commerce.dto.UserSignInRequest;
 import com.example.commerce.dto.UserSignUpRequest;
 import com.example.commerce.entity.User;
 import com.example.commerce.service.UserService;
@@ -24,5 +25,12 @@ public class UserController {
         userService.signUp(userSignUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/signin")
+    public ResponseEntity<String> signIn(@Valid @RequestBody UserSignInRequest userSignInRequest) {
+        String token = userService.signIn(userSignInRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(token);
+    }
+
 
 }
