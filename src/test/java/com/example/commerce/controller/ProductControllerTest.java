@@ -16,8 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -124,10 +123,44 @@ class ProductControllerTest {
         request.setStock(10);
         request.setDescription("설명");
 
-        // when & then
+        // when  then
         mockMvc.perform(put("/products/{productId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("관리자 권한으로 상품 삭제 성공")
+    @WithMockUser(roles = "ADMIN")
+    void testDeleteProduct_Success() throws Exception {
+        // given
+        Product deletedProduct = Product.builder()
+                .id(1L)
+                .name("일반사과")
+                .price(10000)
+                .stock(100)
+                .description("맛있는 사과")
+                .build();
+        deletedProduct.softDelete();
+
+        // Mocking
+        given(productService.deleteProduct(any(Long.class))).willReturn(deletedProduct);
+
+        // when & then
+        mockMvc.perform(delete("/products/{productId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.deleted").value(true))
+                .andExpect(jsonPath("$.name").value("일반사과"));
+    }
+
+    @Test
+    @DisplayName("일반 사용자 권한으로 상품 삭제 실패 (403 Forbidden)")
+    @WithMockUser(roles = "USER")
+    void testDeleteProduct_Forbidden() throws Exception {
+        mockMvc.perform(delete("/products/{productId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
 }
