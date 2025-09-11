@@ -4,15 +4,18 @@ import com.example.commerce.entity.User;
 import com.example.commerce.entity.Role;
 import com.example.commerce.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
-import java.util.Set;
+
 import java.util.Optional;
 import java.util.Collections;
-import java.util.HashSet;
+
+import org.slf4j.Logger;
+
 
 @EnableJpaAuditing
 @SpringBootApplication
@@ -22,13 +25,14 @@ public class CommerceApplication {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	private static final Logger log = LoggerFactory.getLogger(CommerceApplication.class);
 	public static void main(String[] args) {
 		SpringApplication.run(CommerceApplication.class, args);
 	}
 
 	@PostConstruct
 	public void createAdminAccount() {
-		// Checks if an admin account already exists
+
 		Optional<User> existingAdmin = userRepository.findByEmail("admin@example.com");
 
 		if (existingAdmin.isEmpty()) {
@@ -39,9 +43,9 @@ public class CommerceApplication {
 					.roles(Collections.singletonList(Role.ADMIN))
 					.build();
 			userRepository.save(admin);
-			System.out.println("관리자 계정이 성공적으로 생성되었습니다.");
+			log.info("관리자 계정이 성공적으로 생성");
 		} else {
-			System.out.println("관리자 계정이 이미 존재합니다.");
+			log.info("관리자 계정이 이미 존재함");
 		}
 	}
 }
