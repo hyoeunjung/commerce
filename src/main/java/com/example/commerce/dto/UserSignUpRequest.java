@@ -3,6 +3,7 @@ package com.example.commerce.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ public class UserSignUpRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수입력 항목입니다.")
+    @Size(min = 8, message = "비밀번호는 8지 이상이여야합니다.")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
             message = "비밀번호는 8자리 이상이며, 숫자와 영문을 포함해야 합니다.")
     private String password;
