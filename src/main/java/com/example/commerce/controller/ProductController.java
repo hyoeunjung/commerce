@@ -35,4 +35,12 @@ public class ProductController {
         Product updateProduct = productService.updateProduct(productId, productUpdateRequest);
         return ResponseEntity.ok().body(updateProduct);
     }
+
+    //상품삭제
+    @DeleteMapping("/{productId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Product> deleteProduct(@PathVariable Long productId){
+       Product deleteProduct = productService.deleteProduct(productId);
+        return ResponseEntity.ok(deleteProduct);
+    }
 }
