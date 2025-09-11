@@ -1,6 +1,7 @@
 package com.example.commerce.controller;
 
 import com.example.commerce.dto.ProductCreateRequest;
+import com.example.commerce.dto.ProductResponse;
 import com.example.commerce.entity.Product;
 import com.example.commerce.repository.ProductRepository;
 import com.example.commerce.service.ProductService;
@@ -16,17 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController {
 
     private final ProductService productService;
 
     //상품등록
-    @PostMapping("/create")
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest) {
-        Product createProduct = productService.createProduct(productCreateRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createProduct);
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest) {
+        Product createdProduct = productService.createProduct(productCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(createdProduct));
     }
 
 }

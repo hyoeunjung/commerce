@@ -1,10 +1,6 @@
 package com.example.commerce.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -12,7 +8,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
-public class Product {
+public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,9 +28,6 @@ public class Product {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     public void update(String name, Integer price, Integer stock, String description) {
         this.name = name;
         this.price = price;
@@ -46,15 +39,6 @@ public class Product {
         this.isDeleted = true;
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.isDeleted = false;
-    }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+
 }

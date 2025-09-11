@@ -6,6 +6,7 @@ import com.example.commerce.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.Collections;
 import java.util.HashSet;
 
+@EnableJpaAuditing
 @SpringBootApplication
 @RequiredArgsConstructor
 public class CommerceApplication {
