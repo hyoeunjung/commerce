@@ -40,4 +40,12 @@ public class ProductService {
         return product;
 
     }
+
+    //상품삭제
+    @Transactional
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("ID에 해당하는 상품을 찾을수 없음 : " + productId));
+        product.softDelete();
+    }
 }
