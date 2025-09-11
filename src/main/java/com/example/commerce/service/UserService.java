@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -20,15 +22,16 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
 
-        // 비밀번호 유효성
-        if (userSignUpRequest.getPassword() == null || userSignUpRequest.getPassword().length() < 8) {
-            throw new IllegalArgumentException("비밀번호는 영문+ 숫자 8자리 이상이어야 합니다.");
-        }
+        //Builder 패턴을 사용해서 User 객체 생성
+        User user = User.builder()
+                .email(userSignUpRequest.getEmail())
+                .password(passwordEncoder.encode(userSignUpRequest.getPassword()))
+                .username(userSignUpRequest.getUsername())
+                .roles(Collections.singletonList("USER"))
+                .build();
 
-        User user = new User();
-        user.setEmail(userSignUpRequest.getEmail());
-        user.setUsername(userSignUpRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(userSignUpRequest.getPassword()));
+
+
 
         userRepository.save(user);
 
