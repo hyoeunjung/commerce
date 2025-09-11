@@ -1,6 +1,7 @@
 package com.example.commerce.controller;
 
 import com.example.commerce.dto.ProductCreateRequest;
+import com.example.commerce.dto.ProductUpdateRequest;
 import com.example.commerce.entity.Product;
 import com.example.commerce.repository.ProductRepository;
 import com.example.commerce.service.ProductService;
@@ -9,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,4 +27,12 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createProduct);
     }
 
+    //상품수정
+    @PutMapping("/{productId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId,
+                                                 @RequestBody @Valid ProductUpdateRequest productUpdateRequest){
+        Product updateProduct = productService.updateProduct(productId, productUpdateRequest);
+        return ResponseEntity.ok().body(updateProduct);
+    }
 }
