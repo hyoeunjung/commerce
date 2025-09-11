@@ -55,7 +55,7 @@ class ProductControllerTest {
         given(productService.createProduct(any(ProductCreateRequest.class))).willReturn(product);
 
         //when then
-        mockMvc.perform(post("/products/create")
+        mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -75,7 +75,7 @@ class ProductControllerTest {
         request.setDescription("달콤한 배입니다.");
 
         // when then
-        mockMvc.perform(post("/products/create")
+        mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
