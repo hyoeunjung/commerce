@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,9 @@ public class User implements UserDetails {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private List<String> roles = List.of("USER");
+    private List<Role> roles = List.of(Role.USER);
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -54,7 +55,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toList());
     }
 

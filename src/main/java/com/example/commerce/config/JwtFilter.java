@@ -11,10 +11,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Collection;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -27,9 +29,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
+            // 토큰에서 사용자 이메일과 권한 정보를 모두 추출합니다.
             String email = jwtTokenProvider.getEmail(token);
-            UserDetails userDetails = new User(email, "", Collections.emptyList());
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            Collection<? extends GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
+
+            // 추출한 권한 정보로 인증 객체를 생성합니다.
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

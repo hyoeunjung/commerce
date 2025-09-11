@@ -2,6 +2,7 @@ package com.example.commerce.service;
 
 import com.example.commerce.dto.UserSignInRequest;
 import com.example.commerce.dto.UserSignUpRequest;
+import com.example.commerce.entity.Role;
 import com.example.commerce.entity.User;
 import com.example.commerce.repository.UserRepository;
 import com.example.commerce.util.JwtTokenProvider;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class UserService {
                 .email(userSignUpRequest.getEmail())
                 .password(passwordEncoder.encode(userSignUpRequest.getPassword()))
                 .username(userSignUpRequest.getUsername())
-                .roles(Collections.singletonList("USER"))
+                .roles(Collections.singletonList(Role.USER))
                 .build();
 
 
@@ -52,7 +55,25 @@ public class UserService {
         }
 
         //로그인 성공후 jwt 토큰 발급 및 반환
-        return jwtTokenProvider.createToken(user.getEmail());
+        return jwtTokenProvider.createToken(user.getEmail(),
+                user.getRoles()
+                .stream()
+                .map(Enum::name)
+                .collect(Collectors.toList()));
+    }
+
+    //테스트용 admin 계정
+    @Transactional
+    public void createAdminAccount() {
+        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
+            User admin = User.builder()
+                    .email("admin@example.com")
+                    .username("정효은")
+                    .password(passwordEncoder.encode("adminpassword1"))
+                    .roles(List.of(Role.USER, Role.ADMIN)) //
+                    .build();
+            userRepository.save(admin);
+        }
     }
 
 }
