@@ -2,6 +2,7 @@ package com.example.commerce.dto;
 
 import com.example.commerce.entity.Product;
 import lombok.Getter;
+import java.time.LocalDateTime;
 
 @Getter
 public class ProductResponse {
@@ -10,6 +11,10 @@ public class ProductResponse {
     private Integer price;
     private Integer stock;
     private String description;
+    private boolean isDeleted;
+
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
 
     public ProductResponse(Product product) {
         this.id = product.getId();
@@ -17,5 +22,8 @@ public class ProductResponse {
         this.price = product.getPrice();
         this.stock = product.getStock();
         this.description = product.getDescription();
+        this.isDeleted = product.isDeleted();
+        this.createdDate = product.getCreatedDate();
+        this.lastModifiedDate = product.getLastModifiedDate();
     }
 }
