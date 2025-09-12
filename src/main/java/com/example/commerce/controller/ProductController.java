@@ -7,6 +7,10 @@ import com.example.commerce.entity.Product;
 import com.example.commerce.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,5 +45,16 @@ public class ProductController {
     public ResponseEntity<Product> deleteProduct(@PathVariable Long productId){
         Product deleteProduct = productService.deleteProduct(productId);
         return ResponseEntity.ok(deleteProduct);
+    }
+
+    //상품검색
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponse>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<ProductResponse> dtoPage = productService.searchProducts(keyword, pageable);
+
+        return ResponseEntity.ok(dtoPage);
     }
 }
