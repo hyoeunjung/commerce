@@ -1,6 +1,6 @@
 package com.example.commerce.config;
 
-import com.example.commerce.CustomAuthenticationEntryPoint;
+import com.example.commerce.security.CustomAuthenticationEntryPoint;
 import com.example.commerce.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.example.commerce;
+package com.example.commerce.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
