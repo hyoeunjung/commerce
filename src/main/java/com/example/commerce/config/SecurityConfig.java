@@ -26,22 +26,33 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                // JWT 기반 인증을 위해 세션을 사용하지 않도록 설정
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/users/signup"),
-                                new AntPathRequestMatcher("/users/signin"),
-                                new AntPathRequestMatcher("/h2-console/**")
-                        ).permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        // 회원가입 / 로그인
+                        .requestMatchers(new AntPathRequestMatcher("/users/signup")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/users/signin")).permitAll()
+
+                        // 상품 검색 (누구나 가능)
+                        .requestMatchers(new AntPathRequestMatcher("/api/products/search")).permitAll()
+
+                        // 상품 관리 (ADMIN 전용)
+                        .requestMatchers(new AntPathRequestMatcher("/api/products/**")).hasRole("ADMIN")
+
+                        // 장바구니 (로그인 사용자만)
+                        .requestMatchers(new AntPathRequestMatcher("/api/cart/**")).hasAnyRole("USER", "ADMIN")
+
+                        // H2 콘솔
+                        .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+
+                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 );
 
-        // H2 콘솔의 프레임이 깨지지 않도록 비활성화
+        // H2 콘솔 frame 깨짐 방지
         http.headers().frameOptions().disable();
 
-        // JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 추가
+        // JWT 필터 등록
         http.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
