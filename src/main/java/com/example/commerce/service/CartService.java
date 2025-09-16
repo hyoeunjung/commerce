@@ -25,6 +25,13 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
+    public Long getUserIdByEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을수 없음"));
+        return user.getId();
+    }
+
     @Transactional
     public CartItemResponse addCartItem(Long userId, CartItemAddRequest cartItemAddRequest) {
 
@@ -53,7 +60,7 @@ public class CartService {
         }
 
         //CartItem 조회하고 이미 담겼으면 수량을 누적
-        CartItem cartItem = cartItemRepository.findbyCartInAndProductId(cart.getId(), product.getId())
+        CartItem cartItem = cartItemRepository.findByCartAndProductId(cart, product.getId())
                 .orElseGet(() -> {
                     CartItem newItem = new CartItem();
                     newItem.setCart(cart);
