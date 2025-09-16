@@ -59,6 +59,18 @@ public class CartController {
 
     }
 
+    //삭제
+    @DeleteMapping("/items/{productId}")
+    public ResponseEntity<Void> deleteCartItem(
+            @PathVariable Long productId,
+            @AuthenticationPrincipal String userEmail) {
+
+        Long userId = cartService.getUserIdByEmail(userEmail);
+        cartService.deleteCartItem(userId, productId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
 
