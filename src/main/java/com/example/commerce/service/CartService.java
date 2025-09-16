@@ -90,4 +90,32 @@ public class CartService {
                 .map(CartItemResponse::new)
                 .collect(Collectors.toList());
     }
+
+    //장바구니 수량수정
+    @Transactional
+    public CartItemResponse updateCartItemQuantity(Long userId, Long productId, int newQuantity) {
+        if (newQuantity <= 0) {
+            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없음"));
+
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
+
+        CartItem cartItem = cartItemRepository.findByCartAndProductId(cart, productId)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니에 해당 상품이 없음"));
+
+        Product product = cartItem.getProduct();
+
+        if (newQuantity > product.getStock()) {
+            throw new IllegalArgumentException("상품 재고보다 많은 수량을 입력하세요");
+        }
+
+        cartItem.setQuantity(newQuantity);
+        cartItemRepository.save(cartItem);
+
+        return new CartItemResponse(cartItem);
+    }
 }
