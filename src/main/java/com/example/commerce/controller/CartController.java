@@ -2,6 +2,7 @@ package com.example.commerce.controller;
 
 import com.example.commerce.dto.CartItemAddRequest;
 import com.example.commerce.dto.CartItemResponse;
+import com.example.commerce.dto.CartItemUpdateRequest;
 import com.example.commerce.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,25 @@ public class CartController {
         List<CartItemResponse> cartItems = cartService.getCartItems(userId);
         return ResponseEntity.ok(cartItems);
     }
+
+    //수량수정
+    @PutMapping("/items/{productId}")
+    public ResponseEntity<CartItemResponse> updateCartItemQuantity(
+            @PathVariable Long productId,
+            @Valid @RequestBody CartItemUpdateRequest cartItemUpdateRequest,
+            @AuthenticationPrincipal String userEmail){
+
+        Long userId = cartService.getUserIdByEmail(userEmail);
+        CartItemResponse updatedItem = cartService.updateCartItemQuantity(
+                userId,
+                productId,
+                cartItemUpdateRequest.getQuantity()
+        );
+
+        return ResponseEntity.ok(updatedItem);
+
+    }
+
+
 }
 
