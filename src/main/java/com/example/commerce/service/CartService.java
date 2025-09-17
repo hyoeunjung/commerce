@@ -112,11 +112,11 @@ public class CartService {
         Product product = cartItem.getProduct();
 
         if (newQuantity > product.getStock()) {
-            throw new IllegalArgumentException("상품 재고보다 많은 수량을 입력하세요");
+            throw new IllegalArgumentException("상품 재고보다 적거나 같은 수량을 입력하세요");
         }
 
         cartItem.setQuantity(newQuantity);
-        cartItemRepository.save(cartItem);
+
 
         return new CartItemResponse(cartItem);
     }
