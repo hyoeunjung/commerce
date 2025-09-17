@@ -62,6 +62,13 @@ public class UserService {
                 .collect(Collectors.toList()));
     }
 
+    // 이메일 기반으로 유저조회
+    @Transactional
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(" 사용자를 찾을 수 없음"));
+    }
+
     //테스트용 admin 계정
     @Transactional
     public void createAdminAccount() {
