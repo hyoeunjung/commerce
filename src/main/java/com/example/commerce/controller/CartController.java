@@ -25,8 +25,7 @@ public class CartController {
             @AuthenticationPrincipal String userEmail,
             @Valid @RequestBody CartItemAddRequest cartItemAddRequest){
 
-        Long userId = cartService.getUserIdByEmail(userEmail);
-        CartItemResponse cartItemResponse = cartService.addCartItem(userId, cartItemAddRequest);
+        CartItemResponse cartItemResponse = cartService.addCartItem(userEmail, cartItemAddRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItemResponse);
     }
 }

@@ -13,6 +13,7 @@ import com.example.commerce.repository.ProductRepository;
 import com.example.commerce.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,8 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+
 
     @Transactional(readOnly = true)
     public Long getUserIdByEmail(String email){
@@ -33,14 +36,13 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemResponse addCartItem(Long userId, CartItemAddRequest cartItemAddRequest) {
+    public CartItemResponse addCartItem(String email, CartItemAddRequest cartItemAddRequest) {
 
         //사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을수 없음"));
+        User user = userService.getUserByEmail(email);
 
         //사용자 장바구니를 조회하고 없으면 새로 생성
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
