@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -20,6 +19,7 @@ public class CartController {
 
     private final CartService cartService;
 
+    //담기
     @PostMapping("/items")
     public ResponseEntity<CartItemResponse> addCartItem(
             @AuthenticationPrincipal String userEmail,
@@ -28,4 +28,15 @@ public class CartController {
         CartItemResponse cartItemResponse = cartService.addCartItem(userEmail, cartItemAddRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItemResponse);
     }
+
+    //조회
+    @GetMapping("/items")
+    public ResponseEntity<List<CartItemResponse>> getCartItems(
+            @AuthenticationPrincipal String userEmail){
+
+        Long userId = cartService.getUserIdByEmail(userEmail);
+        List<CartItemResponse> cartItems = cartService.getCartItems(userId);
+        return ResponseEntity.ok(cartItems);
+    }
 }
+

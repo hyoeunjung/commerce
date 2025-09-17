@@ -17,6 +17,9 @@ import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -77,5 +80,16 @@ public class CartService {
         cartItemRepository.save(cartItem);
 
         return new CartItemResponse(cartItem);
+    }
+
+    //장바구니 전체 조회
+    @Transactional(readOnly = true)
+    public List<CartItemResponse> getCartItems(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
+
+        return cart.getCartItems().stream()
+                .map(CartItemResponse::new)
+                .collect(Collectors.toList());
     }
 }
