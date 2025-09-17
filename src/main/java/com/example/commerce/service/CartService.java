@@ -120,4 +120,21 @@ public class CartService {
 
         return new CartItemResponse(cartItem);
     }
+
+    //삭제
+    @Transactional
+    public void deleteCartItem(Long userId, Long productId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없음"));
+
+        // 장바구니 조회
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
+
+        // CartItem 조회
+        CartItem cartItem = cartItemRepository.findByCartAndProductId(cart, productId)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니에 해당 상품이 없음"));
+
+        cartItemRepository.delete(cartItem);
+    }
 }
