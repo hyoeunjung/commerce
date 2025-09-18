@@ -29,14 +29,8 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final EmailValidator emailValidator;
 
-
-    @Transactional(readOnly = true)
-    public Long getUserIdByEmail(String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을수 없음"));
-        return user.getId();
-    }
 
     @Transactional
     public CartItemResponse addCartItem(String email, CartItemAddRequest cartItemAddRequest) {
@@ -84,8 +78,9 @@ public class CartService {
 
     //장바구니 전체 조회
     @Transactional(readOnly = true)
-    public List<CartItemResponse> getCartItems(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId)
+    public List<CartItemResponse> getCartItems(String email) {
+        User user = userService.getUserByEmail(email);
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
 
         return cart.getCartItems().stream()
@@ -95,15 +90,15 @@ public class CartService {
 
     //장바구니 수량수정
     @Transactional
-    public CartItemResponse updateCartItemQuantity(Long userId, Long productId, int newQuantity) {
+    public CartItemResponse updateCartItemQuantity(String email, Long productId, int newQuantity) {
         if (newQuantity <= 0) {
             throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없음"));
 
-        Cart cart = cartRepository.findByUserId(userId)
+        User user = userService.getUserByEmail(email);
+
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
 
         CartItem cartItem = cartItemRepository.findByCartAndProductId(cart, productId)
@@ -123,12 +118,11 @@ public class CartService {
 
     //삭제
     @Transactional
-    public void deleteCartItem(Long userId, Long productId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없음"));
+    public void deleteCartItem(String email, Long productId) {
+        User user = userService.getUserByEmail(email);
 
         // 장바구니 조회
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않음"));
 
         // CartItem 조회
