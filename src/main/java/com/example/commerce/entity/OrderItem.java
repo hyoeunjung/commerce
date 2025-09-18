@@ -2,7 +2,7 @@ package com.example.commerce.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+
 
 @Entity
 @Table(name = "order_items")

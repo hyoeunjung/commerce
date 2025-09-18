@@ -13,7 +13,6 @@ import com.example.commerce.repository.ProductRepository;
 import com.example.commerce.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,7 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final EmailValidator emailValidator;
+
 
 
     @Transactional
