@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -28,6 +27,22 @@ public class OrderController {
 
         OrderResponse orderResponse = orderService.createOrder(userEmail, orderCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
+    }
+
+    //조회
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getOrders(
+            @AuthenticationPrincipal String userEmail) {
+        List<OrderResponse> orders = orderService.getOrdersByUser(userEmail);
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderDetails(
+            @AuthenticationPrincipal String userEmail,
+            @PathVariable Long orderId){
+        OrderResponse orderResponse = orderService.getOrderDetails(userEmail, orderId);
+        return ResponseEntity.ok(orderResponse);
     }
 
 }

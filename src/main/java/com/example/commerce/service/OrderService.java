@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +75,26 @@ public class OrderService {
         userCart.getCartItems().clear();
 
         return new OrderResponse(savedOrder);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrdersByUser(String userEmail){
+        User user = userService.getUserByEmail(userEmail);
+        List<Order> orders = orderRepository.findByUserWithOrderItems(user);
+
+        return orders.stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
+
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponse getOrderDetails(String userEmail, Long orderId){
+        User user = userService.getUserByEmail(userEmail);
+
+        Order order = orderRepository.findByIdAndUserWithOrderItems(orderId, user)
+                .orElseThrow(() -> new EntityNotFoundException("해당 주문을 찾을 수 없음"));
+        return new OrderResponse(order);
     }
 
 }
