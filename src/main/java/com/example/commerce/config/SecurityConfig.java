@@ -44,6 +44,9 @@ public class SecurityConfig {
                         // 장바구니 (로그인 사용자만)
                         .requestMatchers(new AntPathRequestMatcher("/api/cart/**")).hasAnyRole("USER", "ADMIN")
 
+                        // 주문 (로그인 사용자만)
+                        .requestMatchers(new AntPathRequestMatcher("/api/orders/**")).hasAnyRole("USER", "ADMIN")
+
                         // H2 콘솔
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
 

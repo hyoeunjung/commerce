@@ -4,6 +4,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,6 +40,16 @@ public class Product extends BaseTimeEntity {
         this.isDeleted = true;
     }
 
+    public void decreaseStock(int quantity) {
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("상품 '" + this.name + "'의 재고(" + this.stock + ")가 부족하여 " + quantity + "개 감소시킬 수 없습니다.");
+        }
+        this.stock -= quantity;
+    }
+
+    public void increaseStock(int quantity) {
+        this.stock += quantity;
+    }
 
 
 }
