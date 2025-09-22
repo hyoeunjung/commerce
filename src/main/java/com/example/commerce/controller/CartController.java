@@ -35,8 +35,7 @@ public class CartController {
     public ResponseEntity<List<CartItemResponse>> getCartItems(
             @AuthenticationPrincipal String userEmail){
 
-        Long userId = cartService.getUserIdByEmail(userEmail);
-        List<CartItemResponse> cartItems = cartService.getCartItems(userId);
+        List<CartItemResponse> cartItems = cartService.getCartItems(userEmail);
         return ResponseEntity.ok(cartItems);
     }
 
@@ -47,9 +46,9 @@ public class CartController {
             @Valid @RequestBody CartItemUpdateRequest cartItemUpdateRequest,
             @AuthenticationPrincipal String userEmail){
 
-        Long userId = cartService.getUserIdByEmail(userEmail);
+
         CartItemResponse updatedItem = cartService.updateCartItemQuantity(
-                userId,
+                userEmail,
                 productId,
                 cartItemUpdateRequest.getQuantity()
         );
@@ -64,8 +63,8 @@ public class CartController {
             @PathVariable Long productId,
             @AuthenticationPrincipal String userEmail) {
 
-        Long userId = cartService.getUserIdByEmail(userEmail);
-        cartService.deleteCartItem(userId, productId);
+
+        cartService.deleteCartItem(userEmail, productId);
 
         return ResponseEntity.noContent().build();
     }
