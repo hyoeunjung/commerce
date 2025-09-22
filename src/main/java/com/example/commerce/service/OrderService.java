@@ -6,11 +6,13 @@ import com.example.commerce.entity.*;
 import com.example.commerce.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page; // Page 임포트
+import org.springframework.data.domain.Pageable; // Pageable 임포트
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,7 @@ public class OrderService {
 
         Order newOrder = Order.builder()
                 .user(user)
+                .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.PENDING)
                 .paymentMethod(orderCreateRequest.getPaymentMethod())
                 .recipientName(orderCreateRequest.getRecipientName())
@@ -52,7 +55,6 @@ public class OrderService {
 
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
-
 
             product.decreaseStock(cartItem.getQuantity());
 
@@ -78,14 +80,11 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByUser(String userEmail){
+    public Page<OrderResponse> getOrdersByUser(String userEmail, Pageable pageable){
         User user = userService.getUserByEmail(userEmail);
-        List<Order> orders = orderRepository.findByUserWithOrderItems(user);
 
-        return orders.stream()
-                .map(OrderResponse::new)
-                .collect(Collectors.toList());
-
+        Page<Order> ordersPage = orderRepository.findByUser(user, pageable);
+        return ordersPage.map(OrderResponse::new);
     }
 
     @Transactional(readOnly = true)

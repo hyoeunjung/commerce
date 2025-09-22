@@ -5,12 +5,13 @@ import com.example.commerce.dto.OrderResponse;
 import com.example.commerce.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -31,10 +32,12 @@ public class OrderController {
 
     //조회
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getOrders(
-            @AuthenticationPrincipal String userEmail) {
-        List<OrderResponse> orders = orderService.getOrdersByUser(userEmail);
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<Page<OrderResponse>> getOrders(
+                                                          @AuthenticationPrincipal String userEmail,
+                                                          Pageable pageable) {
+
+        Page<OrderResponse> ordersPage = orderService.getOrdersByUser(userEmail, pageable);
+        return ResponseEntity.ok(ordersPage);
     }
 
     @GetMapping("/{orderId}")
