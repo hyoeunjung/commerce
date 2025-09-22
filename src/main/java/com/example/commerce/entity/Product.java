@@ -1,4 +1,5 @@
 package com.example.commerce.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,10 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    // 낙관적 락을 위한 @Version 필드 추가
+    @Version
+    private Long version;
+
     public void update(String name, Integer price, Integer stock, String description) {
         this.name = name;
         this.price = price;
@@ -50,6 +55,4 @@ public class Product extends BaseTimeEntity {
     public void increaseStock(int quantity) {
         this.stock += quantity;
     }
-
-
 }

@@ -5,14 +5,15 @@ import com.example.commerce.dto.OrderResponse;
 import com.example.commerce.entity.*;
 import com.example.commerce.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page; // Page 임포트
-import org.springframework.data.domain.Pageable; // Pageable 임포트
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Optional; // Optional 임포트
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,9 @@ public class OrderService {
         int totalOrderAmount = 0;
 
         for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
+
+            Product product = productRepository.findById(cartItem.getProduct().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + cartItem.getProduct().getId()));
 
             product.decreaseStock(cartItem.getQuantity());
 
@@ -73,8 +76,10 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(newOrder);
 
+        // 장바구니 아이템 삭제
         cartItemRepository.deleteAll(cartItems);
         userCart.getCartItems().clear();
+
 
         return new OrderResponse(savedOrder);
     }
@@ -95,5 +100,4 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 주문을 찾을 수 없음"));
         return new OrderResponse(order);
     }
-
 }
